@@ -1,0 +1,43 @@
+FROM ubuntu:18.04 as base
+### Устанавливаем временную зону
+ENV TZ=Europe/Moscow
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+
+### Update repositories
+RUN apt-get update && apt-get upgrade -y
+
+RUN apt-get update && apt-get install -y apache2 apache2-utils curl gnupg wget
+
+RUN apt-get update && apt-get install -y git python3 perl php php-pear nano mc
+RUN apt-get update && \
+    apt-get install -y \
+    php-pdo php-pdo-mysql \
+    php-pdo-pgsql php-pdo-sqlite \
+    php-mbstring php-tokenizer \
+    php-xml php-simplexml php-zip \
+    php-opcache php-iconv php-intl \
+    php-json php-gd php-ctype php-oauth \
+    php-mongodb php-redis \
+    php-apcu php-imagick \
+    php-memcached php-ftp php-imap \
+    php-exif php-sqlite3 php-curl \
+    php-geoip php-memcache \
+    cron systemd supervisor
+RUN apt-get update -y
+RUN rm -R /etc/apache2/sites-enabled/* /etc/apache2/sites-available/* /var/www/*
+
+EXPOSE 82 443
+COPY ./docker/apache2/conf/apache2.conf /etc/apache2/apache2.conf
+
+COPY ./docker/apache2/conf/php.ini /etc/php/7.2/apache2/php.ini
+COPY ./docker/apache2/conf/php.ini /etc/php/7.2/cli/php.ini
+
+RUN a2enmod rewrite
+RUN a2enmod ssl
+WORKDIR /var/www
+
+ADD ./docker/apache2/entry.sh /etc/entry.sh
+RUN chown www-data:www-data /etc/entry.sh
+RUN chmod u+x /etc/entry.sh
+ENTRYPOINT ["/bin/bash", "/etc/entry.sh"]
