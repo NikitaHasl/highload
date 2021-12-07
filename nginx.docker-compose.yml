@@ -8,14 +8,16 @@ services:
             - "81:81"
         volumes:
             - ./docker/nginx/hosts:/etc/nginx/conf.d
-            - ./:/var/www
         links:
-            - php
-
-    php:
-        container_name: php
+            - apache2
+        depends_on:
+            - apache2
+        
+    apache2:
+        container_name: apache2
+        image: apache2image
         build:
             context: .
-            dockerfile: ./docker/nginx/php/DockerFile
+            dockerfile: docker/apache2/DockerFile
         volumes:
             - ./:/var/www
