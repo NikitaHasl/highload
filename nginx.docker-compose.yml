@@ -21,3 +21,12 @@ services:
             dockerfile: docker/apache2/DockerFile
         volumes:
             - ./:/var/www
+    percona:
+        container_name: percona
+        image: percona
+        restart: always
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: "root"
+            MYSQL_DATABASE: laravel
