@@ -8,11 +8,6 @@ use Monolog\Handler\StreamHandler;
 $log = new Logger('name');
 $log->pushHandler(new StreamHandler('log/my.log', Logger::WARNING));
 
-$log->warning('foo');
-$log->error('bar');
-
-$log->warning('Memory1 '.memory_get_usage());
-
 switch ($_SERVER['REQUEST_URI']) {
     case '/':
         require './home.php';
@@ -25,4 +20,4 @@ switch ($_SERVER['REQUEST_URI']) {
         break;
 }
 
-$log->warning('Memory2 '.memory_get_usage());
+$log->alert('Потрачено памяти для выполнения скрипта: ' .(memory_get_usage() / 1024) . 'kb');
