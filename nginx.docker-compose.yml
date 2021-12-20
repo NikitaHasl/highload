@@ -24,9 +24,18 @@ services:
     percona:
         container_name: percona
         image: percona
-        restart: always
+#        restart: always
         ports:
             - "3306:3306"
         environment:
             MYSQL_ROOT_PASSWORD: "root"
             MYSQL_DATABASE: laravel
+    postgres:
+        container_name: postgres
+        image: postgres:13.5
+        environment:
+            POSTGRES_DB: 'psql'
+            POSTGRES_USER: 'root'
+            POSTGRES_PASSWORD: 'root'
+        ports:
+            - "5432:5432"

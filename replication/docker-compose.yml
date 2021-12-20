@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  master:
+    image: 'mysql:8.0'
+    container_name: master
+    ports:
+      - "30306:3306"
+    volumes:
+      - ./test.sql:/tmp/test.sql
+    environment:
+      MYSQL_ROOT_USER: "root"
+      MYSQL_ROOT_PASSWORD: "root"
+
+  replica:
+    image: 'mysql:8.0'
+    container_name: replica
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./test.sql:/tmp/test.sql
+    environment:
+      MYSQL_ROOT_USER: "root"
+      MYSQL_ROOT_PASSWORD: "root"
