@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 as base
+FROM ubuntu:20.04 as base
 ### Устанавливаем временную зону
 ENV TZ=Europe/Moscow
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -25,12 +25,31 @@ RUN apt-get update && \
     php-geoip php-memcache \
     cron systemd supervisor
 RUN apt-get update -y
+
+RUN apt-get install php-dev libmcrypt-dev  npm -y
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+    && apt-get install -y nodejs
+RUN pecl install xdebug
+
+RUN pecl channel-update pecl.php.net
+RUN pecl install mcrypt
+
+RUN mkdir "/var/log/xdebug"
+RUN chown -R www-data:www-data /var/log/xdebug
+
 RUN rm -R /etc/apache2/sites-enabled/* /etc/apache2/sites-available/* /var/www/*
+
+RUN \
+  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+  php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
+  php composer-setup.php &&\
+  php -r "unlink('composer-setup.php');"
+RUN mv composer.phar /usr/local/bin/composer
 
 COPY ./docker/apache2/conf/apache2.conf /etc/apache2/apache2.conf
 
-COPY ./docker/apache2/conf/php.ini /etc/php/7.2/apache2/php.ini
-COPY ./docker/apache2/conf/php.ini /etc/php/7.2/cli/php.ini
+COPY ./docker/apache2/conf/php.ini /etc/php/7.4/apache2/php.ini
+COPY ./docker/apache2/conf/php.ini /etc/php/7.4/cli/php.ini
 
 RUN a2enmod rewrite
 RUN a2enmod ssl
