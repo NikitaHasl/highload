@@ -15,12 +15,20 @@ services:
         
     apache2:
         container_name: apache2
-        image: apache2image
         build:
             context: .
             dockerfile: docker/apache2/DockerFile
         volumes:
             - ./:/var/www
+    redis:
+        container_name: db-redis
+        build:
+            context: .
+            dockerfile: docker/redis/DockerFile
+        sysctls:
+            - net.core.somaxconn=1000
+        ports:
+            - "6379:6379"
     percona:
         container_name: percona
         image: percona
