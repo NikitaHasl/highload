@@ -12,7 +12,6 @@ services:
             - apache2
         depends_on:
             - apache2
-        
     apache2:
         container_name: apache2
         build:
