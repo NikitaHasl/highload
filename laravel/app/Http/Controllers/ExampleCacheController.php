@@ -22,4 +22,9 @@ class ExampleCacheController
         return $view;
 
     }
+
+    public function queue()
+    {
+
+    }
 }
